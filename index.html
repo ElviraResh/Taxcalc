@@ -31,7 +31,7 @@
           </li>
 
           <li class="navigation__item">
-            <a href="#" class="navigation__link" data-tax="osno">ОСНО</a>
+            <a href="#" class="navigation__link navigation__link_active" data-tax="osno">ОСНО</a>
           </li>
 
           <li class="navigation__item">
@@ -54,15 +54,15 @@
             <form class="calc__form">
               <label class="calc__label calc__label_input">
                 <span class="calc__text">Доход от физических лиц</span>
-                <input class="calc__input" type="number" name="a">
+                <input class="calc__input" type="number" name="individual">
               </label>
 
               <label class="calc__label calc__label_input">
                 <span class="calc__text">Доход от юридических лиц</span>
-                <input class="calc__input" type="number" name="b">
+                <input class="calc__input" type="number" name="entity">
               </label>
 
-              <!-- <label class="calc__label calc__label_checkbox">
+              <label class="calc__label calc__label_checkbox">
                 <input class="calc__checkbox" type="checkbox" name="addCompensation">
                 <span class="calc__text">Налоговый вычет</span>
               </label>
@@ -70,7 +70,7 @@
               <label class="calc__label calc__label_input calc__label_compensation">
                 <span class="calc__text">Остаток вычета</span>
                 <input class="calc__input" type="number" name="compensation">
-              </label> -->
+              </label> 
             </form>
           </div>
 
@@ -82,20 +82,20 @@
               <p class="result__tax result__tax_total">0</p>
             </div>
 
-            <!-- <div class="result__block">
+            <div class="result__block result__block_compensation">
               <p class="result__caption">Налоговый вычет</p>
-              <p class="result__tax">0</p>
+              <p class="result__tax result__tax_compensation">0</p>
             </div>
             
-            <div class="result__block">
+            <div class="result__block result__block_compensation">
               <p class="result__caption">Остаток вычета</p>
-              <p class="result__tax">0</p>
+              <p class="result__tax result__tax_rest-compensation">0</p>
             </div>
 
-            <div class="result__block">
+            <div class="result__block result__block_compensation">
               <p class="result__caption">Налог с учетом вычета</p>
-              <p class="result__tax">0</p> 
-            </div> -->
+              <p class="result__tax result__tax_result">0</p> 
+            </div>
           </div>
         </div>
 
@@ -217,7 +217,7 @@
         </div>
       </section>
 
-      <section class="calc osno" data-tax="osno">
+      <section class="calc osno calc_active" data-tax="osno">
         <h2 class="calc__title">ОСН / ОСНО</h2>
 
         <p class="calc__description">Общая система налогообложения</p>
@@ -226,13 +226,13 @@
           <div class="calc__form-wrapper">
             <form class="calc__form">
               <div class="calc__radio-wrapper">
-                <label class="calc__label calc__label_radio">
-                  <input class="calc__radio" type="radio" name="type">
+                <label class="calc__label calc__label_radio calc__label_ip">
+                  <input class="calc__radio" type="radio" name="type" value="ip">
                   <span class="calc__text">ИП</span>
                 </label>
 
-                <label class="calc__label calc__label_radio">
-                  <input class="calc__radio" type="radio" name="type">
+                <label class="calc__label calc__label_radio calc__label_ooo">
+                  <input class="calc__radio" type="radio" name="type" value="ooo">
                   <span class="calc__text">ООО</span>
                 </label>
 
@@ -268,17 +268,17 @@
               <p class="result__tax">0</p>
             </div>
 
-            <div class="result__block">
+            <div class="result__block result__block_ip">
               <p class="result__caption">НДФЛ(Вычет в виде расходов)</p>
               <p class="result__tax">0</p>
             </div>
 
-            <div class="result__block">
+            <div class="result__block result__block_ip">
               <p class="result__caption">НДФЛ(Вычет 20% от доходов)</p>
               <p class="result__tax">0</p>
             </div>
 
-            <div class="result__block">
+            <div class="result__block result__block_ooo">
               <p class="result__caption">Налог на прибыль 20%</p>
               <p class="result__tax">0</p>
             </div>
