@@ -49,6 +49,20 @@ const debounceTimer = (fn, msec) => {
 
 {
   // Reset
+  const resetBtn = document.querySelectorAll('.calc__btn-reset');
+
+  resetBtn.forEach(elem => {    
+    elem.addEventListener('click', () => {
+      const calcInput = document.querySelectorAll('.calc__input');
+      const resultTax = document.querySelectorAll('.result__tax');
+      calcInput.forEach(e => {
+        e.value = '';
+      })
+      resultTax.forEach(e => {
+        e.textContent = 0;
+      })
+    })
+  })
 
 }
 
