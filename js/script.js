@@ -5,6 +5,26 @@ const formatCurrency = n =>
     maximumFractionDigits: 2,
   }).format(n);
 
+
+// Задержка
+const debounceTimer = (fn, msec) => {
+  let lastCall = 0;
+  let lastCallTimer = NaN;
+
+  return (...arg) => {
+    const previousCall = lastCall;
+    lastCall = Date.now();
+
+    if (previousCall && ((lastCall - previousCall) <= msec)) {
+      clearTimeout(lastCallTimer);
+    }
+
+    lastCallTimer = setTimeout(() => {
+      fn(...arg);
+    }, msec)
+  }
+}
+
 {
   // Navigation  
   const navigationLinks = document.querySelectorAll('.navigation__link');
@@ -27,6 +47,11 @@ const formatCurrency = n =>
   };
 }
 
+{
+  // Reset
+
+}
+
 
 {
   // AUSN
@@ -37,17 +62,20 @@ const formatCurrency = n =>
 
   calcLabelExpenses.style.display = 'none';
 
-  formAusn.addEventListener('input', () => {
+  formAusn.addEventListener('input', debounceTimer(() => {
+    const income = +formAusn.income.value;
     if (formAusn.type.value === 'income') {
       calcLabelExpenses.style.display = 'none';
-      resultTaxTotal.textContent = (formAusn.income.value * 0.08) < 0 ? 0 : formatCurrency(formAusn.income.value * 0.08);
+      resultTaxTotal.textContent = formatCurrency(income * 0.08);
       formAusn.expenses.value = '';
     }
     if (formAusn.type.value === 'expenses') {
       calcLabelExpenses.style.display = '';
-      resultTaxTotal.textContent = ((formAusn.income.value - formAusn.expenses.value) * 0.2) < 0 ? 0 : formatCurrency((formAusn.income.value - formAusn.expenses.value) * 0.2);
+      const expenses = +formAusn.expenses.value;
+      const profit = income < expenses ? 0 : income - expenses;
+      resultTaxTotal.textContent = formatCurrency(profit * 0.2);
     }
-  });
+  }, 3000));
 
 }
 
@@ -73,27 +101,31 @@ const formatCurrency = n =>
 
   checkCompensation();
 
-  formSelfEmployment.addEventListener('input', () => {
-    const resIndividual = formSelfEmployment.individual.value * 0.04;
-    const resEntity = formSelfEmployment.entity.value * 0.06;
+  formSelfEmployment.addEventListener('input', debounceTimer(() => {
+    const individual = +formSelfEmployment.individual.value;
+    const entity = +formSelfEmployment.entity.value;
+    const resIndividual = individual * 0.04;
+    const resEntity = entity * 0.06;
 
     checkCompensation();
 
     const tax = resIndividual + resEntity;
-    formSelfEmployment.compensation.value = formSelfEmployment.compensation.value > 10_000
+
+
+    formSelfEmployment.compensation.value = +formSelfEmployment.compensation.value > 10_000
       ? 10_000
       : formSelfEmployment.compensation.value;
-    const benefit = formSelfEmployment.compensation.value;
-    const resBenefit = formSelfEmployment.individual.value * 0.01 + formSelfEmployment.entity.value * 0.02;
+    const benefit = +formSelfEmployment.compensation.value;
+    const resBenefit = individual * 0.01 + entity * 0.02;
     const finalBenefit = benefit - resBenefit > 0 ? benefit - resBenefit : 0;
 
     const finalTax = tax - (benefit - finalBenefit);
 
-    resultTaxTotalSelfEmployment.textContent = tax < 0 ? 0 : formatCurrency(tax);
-    resultTaxCompensation.textContent = (benefit - finalBenefit) < 0 ? 0 : formatCurrency(benefit - finalBenefit);
-    resultTaxRestCompensation.textContent = finalBenefit < 0 ? 0 : formatCurrency(finalBenefit);
-    resultTaxResult.textContent = finalTax < 0 ? 0 : formatCurrency(finalTax);
-  });
+    resultTaxTotalSelfEmployment.textContent = formatCurrency(tax);
+    resultTaxCompensation.textContent = formatCurrency(benefit - finalBenefit);
+    resultTaxRestCompensation.textContent = formatCurrency(finalBenefit);
+    resultTaxResult.textContent = formatCurrency(finalTax);
+  }, 3000));
 }
 
 {
@@ -126,27 +158,27 @@ const formatCurrency = n =>
 
   checkFormBusiness();
 
-  formOsno.addEventListener('input', () => {
+  formOsno.addEventListener('input', debounceTimer(() => {
     checkFormBusiness();
 
-    const income = formOsno.income.value;
-    const expenses = formOsno.expenses.value;
-    const property = formOsno.property.value;
+    const income = +formOsno.income.value;
+    const expenses = +formOsno.expenses.value;
+    const property = +formOsno.property.value;
 
 
     const nds = income * 0.2;
     const taxProperty = property * 0.02;
-    const profit = income - expenses;
+    const profit = income < expenses ? 0 : income - expenses;
     const ndflExpensesTotal = profit * 0.13;
     const ndflIncomeTotal = (income - nds) * 0.13;
     const taxProfit = profit * 0.2;
 
-    resultTaxNds.textContent = nds < 0 ? 0 : formatCurrency(nds);
-    resultTaxProperty.textContent = taxProperty < 0 ? 0 : formatCurrency(taxProperty);
-    resultTaxNdflExpenses.textContent = ndflExpensesTotal < 0 ? 0 : formatCurrency(ndflExpensesTotal);
-    resultTaxNdflIncome.textContent = ndflIncomeTotal < 0 ? 0 : formatCurrency(ndflIncomeTotal);
-    resultTaxProfit.textContent = taxProfit < 0 ? 0 : formatCurrency(taxProfit);
-  });
+    resultTaxNds.textContent = formatCurrency(nds);
+    resultTaxProperty.textContent = formatCurrency(taxProperty);
+    resultTaxNdflExpenses.textContent = formatCurrency(ndflExpensesTotal);
+    resultTaxNdflIncome.textContent = formatCurrency(ndflIncomeTotal);
+    resultTaxProfit.textContent = formatCurrency(taxProfit);
+  }, 3000));
 }
 
 {
@@ -223,13 +255,13 @@ const formatCurrency = n =>
   /* checkShopProperty(formUsn.typeTax.value); */
   typeTax[formUsn.typeTax.value]();
 
-  formUsn.addEventListener('input', () => {
+  formUsn.addEventListener('input', debounceTimer(() => {
     /* checkShopProperty(formUsn.typeTax.value); */
     typeTax[formUsn.typeTax.value]();
-    const income = formUsn.income.value;
-    const expenses = formUsn.expenses.value;
-    const contributions = formUsn.contributions.value;
-    const property = formUsn.property.value;
+    const income = +formUsn.income.value;
+    const expenses = +formUsn.expenses.value;
+    const contributions = +formUsn.contributions.value;
+    const property = +formUsn.property.value;
 
     let profit = income - contributions;
 
@@ -243,12 +275,37 @@ const formatCurrency = n =>
     const tax = summ * percent[formUsn.typeTax.value];
     const taxProperty = property * 0.02;
 
-    resultTaxTotal.textContent = tax < 0 ? 0 : formatCurrency(tax);
-    resultTaxProperty.textContent = taxProperty < 0 ? 0 : formatCurrency(taxProperty);
-
-
-  });
+    resultTaxTotal.textContent = formatCurrency(tax < 0 ? 0 : tax);
+    resultTaxProperty.textContent = formatCurrency(taxProperty);
+  }, 3000));
 }
+
+{
+  // Tax-return
+
+  const taxReturn = document.querySelector('.tax-return');
+  const formTaxReturn = taxReturn.querySelector('.calc__form');
+  const resultTaxNdfl = taxReturn.querySelector('.result__tax_ndfl');
+  const resultTaxPossible = taxReturn.querySelector('.result__tax_possible');
+  const resultTaxDeduction = taxReturn.querySelector('.result__tax_deduction');
+
+  formTaxReturn.addEventListener('input', debounceTimer(() => {
+    const expenses = +formTaxReturn.expenses.value;
+    const income = +formTaxReturn.income.value;
+    const sumExpenses = +formTaxReturn.sumExpenses.value;
+
+    const ndfl = income * 0.13;
+    const possibleDeduction = expenses < sumExpenses ? expenses * 0.13 : sumExpenses * 0.13;
+    const deduction = possibleDeduction < ndfl ? possibleDeduction : ndfl;
+
+    resultTaxNdfl.textContent = formatCurrency(ndfl);
+    resultTaxPossible.textContent = formatCurrency(possibleDeduction);
+    resultTaxDeduction.textContent = formatCurrency(deduction);
+
+  }, 3000));
+}
+
+
 
 
 
